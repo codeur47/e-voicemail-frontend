@@ -8,6 +8,7 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable({providedIn: 'root'})
 export class AuthenticationService {
+
   public host = environment.apiUrl;
   private token: string | null = '';
   private loggedInUsername: string = '';
