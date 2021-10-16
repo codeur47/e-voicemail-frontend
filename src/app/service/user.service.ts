@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { User } from '../model/user';
 import { CustomHttpResponse } from '../model/custom-http-response';
+import {UserRequest} from "../model/user.request";
 
 @Injectable({providedIn: 'root'})
 export class UserService {
@@ -15,8 +16,8 @@ export class UserService {
     return this.http.get<User[]>(`${this.host}/user/list`);
   }
 
-  public addUser(formData: FormData): Observable<User> {
-    return this.http.post<User>(`${this.host}/user/add`, formData);
+  public addUser(userRequest: UserRequest): Observable<User> {
+    return this.http.post<User>(`${this.host}/user/add`, userRequest);
   }
 
   public updateUser(formData: FormData): Observable<User> {
