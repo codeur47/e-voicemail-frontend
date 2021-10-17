@@ -33,6 +33,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     active: false,
     notLocked: false,
     role: '',
+    supUsername: ''
   };
 
   dialogType = "";
@@ -64,13 +65,15 @@ export class DashBoardComponent implements OnInit, OnDestroy {
       data: {
         userForm: this.userForm,
         dialogType: this.dialogType,
-        selectedUser: this.selectedUser
+        selectedUser: this.selectedUser,
+        users: this.users
       },
       minWidth: this.minWidth
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.addUser();
+        console.log(JSON.stringify(this.userForm.value))
+        //this.addUser();
       }
     })
   }
@@ -83,6 +86,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     this.userRequest.active = this.userForm.get('active')?.value;
     this.userRequest.notLocked = this.userForm.get('notLocked')?.value;
     this.userRequest.role = this.userForm.get('role')?.value;
+    this.userRequest.supUsername = this.userForm.get('supUsername')?.value;
 
     this.subscriptions.push(
       this.userService.addUser(this.userRequest).subscribe(
@@ -115,6 +119,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
       active: new FormControl(false, Validators.required),
       notLocked: new FormControl(false, Validators.required),
       role: new FormControl('', Validators.required),
+      supUsername: new FormControl('')
     });
   }
 
