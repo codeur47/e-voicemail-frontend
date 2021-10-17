@@ -23,6 +23,7 @@ import {RoleformatPipe} from "../roleformat.pipe";
     FormsModule,
     CommonModule
   ],
-  bootstrap: [NavBarComponent,RightSidebarComponent,LeftSidebarComponent,FooterComponent,DashBoardComponent]
+  exports: [],
+  bootstrap: [NavBarComponent, RightSidebarComponent, LeftSidebarComponent, FooterComponent, DashBoardComponent]
 })
 export class DashBoardModule { }

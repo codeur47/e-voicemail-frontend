@@ -39,6 +39,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   public users: User[];
   public refreshing: boolean;
+  public selectedUser: User;
 
   constructor(private router: Router, private authenticationService: AuthenticationService,
               private userService: UserService, private notificationService: NotificationService,
@@ -55,12 +56,15 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     this.initUserForm();
   }
 
-  openDialog(dialogType: string) {
+  openDialog(dialogType: string, selectedUser?: User) {
     this.dialogType = dialogType;
+    if (selectedUser != undefined)
+      this.selectedUser = selectedUser;
     const dialogRef = this.dialog.open(DialogComponent, {
       data: {
         userForm: this.userForm,
-        dialogType: this.dialogType
+        dialogType: this.dialogType,
+        selectedUser: this.selectedUser
       },
       minWidth: this.minWidth
     });
@@ -70,6 +74,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
       }
     })
   }
+
 
   addUser() {
     this.userRequest.firstName = this.userForm.get('firstName')?.value;
