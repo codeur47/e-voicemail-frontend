@@ -54,12 +54,10 @@
       </select>
     </div>
 
-    <div class="fv-row mb-10" style="margin-top: 30px;" *ngIf="showSup">
+    <div class="fv-row mb-10" style="margin-top: 30px;" *ngIf="showSup && data.supervisors.length > 0">
       <label class="required form-label fs-6 mb-2">Please select a supervisor</label>
-      <select class="form-control" name="supUsername" [formControlName]="'supUsername'">
-        <option value="ROLE_USER">USER</option>
-        <option value="ROLE_SUPERVISOR">SUPERVISOR</option>
-        <option value="ROLE_ADMIN">ADMIN</option>
+      <select class="form-control" name="supId" [formControlName]="'supId'">
+        <option value="{{supervisor.userId}}" *ngFor="let supervisor of data.supervisors">{{supervisor.firstName | titlecase}} {{supervisor.lastName |  uppercase}}</option>
       </select>
     </div>
   </form>

@@ -10,6 +10,7 @@ import {DialogType} from "../enum/dialog.type";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {UserRequest} from "../model/user.request";
 import {Subscription} from "rxjs";
+import {Role} from "../enum/role.enum";
 
 @Component({
   selector: 'app-dashboard',
@@ -33,12 +34,13 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     active: false,
     notLocked: false,
     role: '',
-    supUsername: ''
+    supId: ''
   };
 
   dialogType = "";
   private subscriptions: Subscription[] = [];
   public users: User[];
+  public supervisors: User[];
   public refreshing: boolean;
   public selectedUser: User;
 
@@ -66,14 +68,14 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         userForm: this.userForm,
         dialogType: this.dialogType,
         selectedUser: this.selectedUser,
-        users: this.users
+        users: this.users,
+        supervisors: this.supervisors
       },
       minWidth: this.minWidth
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log(JSON.stringify(this.userForm.value))
-        //this.addUser();
+        this.addUser();
       }
     })
   }
@@ -86,7 +88,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     this.userRequest.active = this.userForm.get('active')?.value;
     this.userRequest.notLocked = this.userForm.get('notLocked')?.value;
     this.userRequest.role = this.userForm.get('role')?.value;
-    this.userRequest.supUsername = this.userForm.get('supUsername')?.value;
+    this.userRequest.supId = this.userForm.get('supId')?.value;
 
     this.subscriptions.push(
       this.userService.addUser(this.userRequest).subscribe(
@@ -105,6 +107,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         (response: User[]) => {
           this.userService.addUsersToLocalCache(response);
           this.users = response;
+          this.supervisors = this.users.filter(user => user.role === Role.SUPERVISOR);
           this.refreshing = false;
         }
       )
@@ -119,7 +122,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
       active: new FormControl(false, Validators.required),
       notLocked: new FormControl(false, Validators.required),
       role: new FormControl('', Validators.required),
-      supUsername: new FormControl('')
+      supId: new FormControl('')
     });
   }
 
