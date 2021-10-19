@@ -173,49 +173,9 @@
           <div class="d-flex align-items-center w-200px w-sm-300px flex-column mt-3">
             <div class="symbol-group symbol-hover mb-3">
               <!--begin::User-->
-              <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" title="Alan Warden">
-                <span class="symbol-label bg-warning text-inverse-warning fw-bolder">A</span>
+              <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" title="{{simpleUserResponse?.lastName | uppercase}} {{simpleUserResponse?.firstName | titlecase}}" *ngFor="let simpleUserResponse of data.simpleUserResponses">
+                <span class="symbol-label bg-warning text-inverse-warning fw-bolder">{{simpleUserResponse?.lastName+' '+simpleUserResponse?.firstName | initialformat | uppercase}}</span>
               </div>
-              <!--end::User-->
-              <!--begin::User-->
-              <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" title="Michael Eberon">
-                <span class="symbol-label bg-warning text-inverse-warning fw-bolder">DA</span>
-              </div>
-              <!--end::User-->
-              <!--begin::User-->
-              <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" title="Michelle Swanston">
-                <span class="symbol-label bg-warning text-inverse-warning fw-bolder">GA</span>
-              </div>
-              <!--end::User-->
-              <!--begin::User-->
-              <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" title="Francis Mitcham">
-                <span class="symbol-label bg-warning text-inverse-warning fw-bolder">UA</span>
-              </div>
-              <!--end::User-->
-              <!--begin::User-->
-              <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" title="Susan Redwood">
-                <span class="symbol-label bg-warning text-inverse-warning fw-bolder">AI</span>
-              </div>
-              <!--end::User-->
-              <!--begin::User-->
-              <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" title="Melody Macy">
-                <span class="symbol-label bg-warning text-inverse-warning fw-bolder">AG</span>
-              </div>
-              <!--end::User-->
-              <!--begin::User-->
-              <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" title="Perry Matthew">
-                <span class="symbol-label bg-warning text-inverse-warning fw-bolder">AU</span>
-              </div>
-              <!--end::User-->
-              <!--begin::User-->
-              <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" title="Barry Walter">
-                <span class="symbol-label bg-warning text-inverse-warning fw-bolder">AB</span>
-              </div>
-              <!--end::User-->
-              <!--begin::All users-->
-              <a href="#" class="symbol symbol-35px symbol-circle" data-bs-toggle="modal" data-bs-target="#kt_modal_view_users">
-                <span class="symbol-label bg-dark text-inverse-dark fs-8 fw-bolder" data-bs-toggle="tooltip" data-bs-trigger="hover" title="View more users">+42</span>
-              </a>
               <!--end::All users-->
             </div>
             <!--end::Users-->

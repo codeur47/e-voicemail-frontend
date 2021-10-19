@@ -112,12 +112,12 @@
               <div class="table-responsive">
                 <!--begin::Table-->
                 <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4">
-                  <tbody *ngFor="let appUser of users">
+                  <tbody *ngFor="let appUser of userResponses">
                   <tr>
                     <td>
                       <div class="d-flex align-items-center">
                         <div class="symbol symbol-65px symbol-circle mb-5">
-                          <span class="symbol-label fs-2x fw-bold text-primary bg-light-primary">{{appUser?.lastName+' '+appUser?.firstName | initialformat | uppercase}}</span>
+                          <span class="symbol-label fs-2x fw-bold text-{{theme}} bg-light-{{theme}}">{{appUser?.lastName+' '+appUser?.firstName | initialformat | uppercase}}</span>
                         </div>
                         <div class="d-flex justify-content-start flex-column" style="margin-left: 5px;">
                           <a href="#" class="text-dark fw-bolder text-hover-primary fs-6">{{appUser?.lastName | uppercase}} {{appUser?.firstName | titlecase}}</a>

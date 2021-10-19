@@ -11,6 +11,8 @@ import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {UserRequest} from "../model/user.request";
 import {Subscription} from "rxjs";
 import {Role} from "../enum/role.enum";
+import {UserResponse} from "../model/user.response";
+import {SimpleUserResponse} from "../model/simpleuser.response";
 
 @Component({
   selector: 'app-dashboard',
@@ -40,26 +42,31 @@ export class DashBoardComponent implements OnInit, OnDestroy {
   dialogType = "";
   private subscriptions: Subscription[] = [];
   public users: User[];
-  public supervisors: User[];
+  public supervisors: UserResponse[];
   public refreshing: boolean;
-  public selectedUser: User;
+  public selectedUser: UserResponse;
+  userResponses: UserResponse[];
+  circleTheme= ['dark','danger','info', 'primary','success', 'warning'];
+  theme: string;
+
 
   constructor(private router: Router, private authenticationService: AuthenticationService,
               private userService: UserService, private notificationService: NotificationService,
               public dialog: MatDialog,fb: FormBuilder) {
-    this.userForm = fb.group(this.userRequest)
+    this.userForm = fb.group(this.userRequest);
   }
 
   ngOnDestroy(): void {
   }
 
   ngOnInit(): void {
+    this.theme = this.generateCircleThemes();
     this.user = this.authenticationService.getUserFromLocalCache();
     this.getUsers();
     this.initUserForm();
   }
 
-  openDialog(dialogType: string, selectedUser?: User) {
+  openDialog(dialogType: string, selectedUser?: UserResponse) {
     this.dialogType = dialogType;
     if (selectedUser != undefined)
       this.selectedUser = selectedUser;
@@ -69,7 +76,8 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         dialogType: this.dialogType,
         selectedUser: this.selectedUser,
         users: this.users,
-        supervisors: this.supervisors
+        supervisors: this.supervisors,
+        simpleUserResponses: selectedUser?.simpleUserResponses
       },
       minWidth: this.minWidth
     });
@@ -104,10 +112,10 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     this.refreshing = true;
     this.subscriptions.push(
       this.userService.getUsers().subscribe(
-        (response: User[]) => {
+        (response: UserResponse[]) => {
           this.userService.addUsersToLocalCache(response);
-          this.users = response;
-          this.supervisors = this.users.filter(user => user.role === Role.SUPERVISOR);
+          this.userResponses = response;
+          this.supervisors = this.userResponses.filter(user => user.role === Role.SUPERVISOR);
           this.refreshing = false;
         }
       )
@@ -124,6 +132,11 @@ export class DashBoardComponent implements OnInit, OnDestroy {
       role: new FormControl('', Validators.required),
       supId: new FormControl('')
     });
+  }
+
+  generateCircleThemes(): string{
+    const randomIndex = Math.floor(Math.random() * 5);
+    return this.circleTheme[randomIndex];
   }
 
 }

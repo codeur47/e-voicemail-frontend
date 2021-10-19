@@ -5,5 +5,5 @@ export interface UserRequest {
   active: boolean;
   notLocked: boolean;
   role: string;
-  supId: String;
+  supId: string;
 }

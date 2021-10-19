@@ -1,9 +1,16 @@
+import {SimpleUserResponse} from "./simpleuser.response";
+
 export interface UserResponse {
+  userId: string;
   firstName: string;
   lastName: string;
   username: string;
-  active: boolean;
-  notLocked: boolean;
+  lastLoginDate: Date
+  joinDate:Date
   role: string;
-  supId: String;
+  authorities:[]
+  supId: string;
+  active: boolean;
+  notLocked: boolean
+  simpleUserResponses: SimpleUserResponse[]
 }

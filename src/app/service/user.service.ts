@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { User } from '../model/user';
 import { CustomHttpResponse } from '../model/custom-http-response';
 import {UserRequest} from "../model/user.request";
+import {UserResponse} from "../model/user.response";
 
 @Injectable({providedIn: 'root'})
 export class UserService {
@@ -12,8 +13,8 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  public getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.host}/user/list`);
+  public getUsers(): Observable<UserResponse[]> {
+    return this.http.get<UserResponse[]>(`${this.host}/user/list`);
   }
 
   public addUser(userRequest: UserRequest): Observable<User> {
@@ -39,7 +40,7 @@ export class UserService {
     return this.http.delete<CustomHttpResponse>(`${this.host}/user/delete/${username}`);
   }
 
-  public addUsersToLocalCache(users: User[]): void {
+  public addUsersToLocalCache(users: UserResponse[]): void {
     localStorage.setItem('users', JSON.stringify(users));
   }
 
