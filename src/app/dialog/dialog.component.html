@@ -1,6 +1,10 @@
 <div mat-dialog-title style="display:flex; justify-content:space-between">
   <p class="card-label" *ngIf="user_creation == data.dialogType">Add user</p>
 
+  <p class="card-label" *ngIf="user_deletion == data.dialogType">Delete user</p>
+
+  <p class="card-label" *ngIf="user_update == data.dialogType">Update user</p>
+
   <span class="svg-icon svg-icon-primary svg-icon-2x" mat-dialog-close>
     <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
       <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -15,7 +19,7 @@
 
 <mat-dialog-content class="mat-typography">
 
-  <form class="form" [formGroup]="data.userForm" *ngIf="user_creation == data.dialogType">
+  <form class="form" [formGroup]="data.userForm" *ngIf="user_creation == data.dialogType || user_update == data.dialogType">
     <div class="fv-row mb-10">
       <label class="required form-label fs-6 mb-2">FirstName</label>
       <input class="form-control form-control-lg form-control-solid" type="text" [formControlName]="'firstName'"
@@ -174,7 +178,7 @@
             <div class="symbol-group symbol-hover mb-3">
               <!--begin::User-->
               <div class="symbol symbol-35px symbol-circle" data-bs-toggle="tooltip" title="{{simpleUserResponse?.lastName | uppercase}} {{simpleUserResponse?.firstName | titlecase}}" *ngFor="let simpleUserResponse of data.simpleUserResponses">
-                <span class="symbol-label bg-warning text-inverse-warning fw-bolder">{{simpleUserResponse?.lastName+' '+simpleUserResponse?.firstName | initialformat | uppercase}}</span>
+                <span class="symbol-label bg-{{generateCircleThemes(simpleUserResponse.themeId)}} text-inverse-{{generateCircleThemes(simpleUserResponse.themeId)}} fw-bolder">{{simpleUserResponse?.lastName+' '+simpleUserResponse?.firstName | initialformat | uppercase}}</span>
               </div>
               <!--end::All users-->
             </div>
@@ -187,9 +191,13 @@
     </div>
   </div >
 
+  <p class="card-label" *ngIf="user_deletion == data.dialogType">Are you sure to delete this user ?</p>
+
 </mat-dialog-content>
 
 <mat-dialog-actions style="display:flex; justify-content:center" *ngIf="data.dialogType != user_information">
-  <button [mat-dialog-close]="true" type="button" class="btn btn-primary btn-lg">Save</button>
+  <button [mat-dialog-close]="true" type="button" class="btn btn-danger btn-lg" *ngIf="data.dialogType == user_deletion">Delete</button>
+  <button [mat-dialog-close]="true" type="button" class="btn btn-primary btn-lg" *ngIf="data.dialogType == user_update">Update</button>
+  <button [mat-dialog-close]="true" type="button" class="btn btn-primary btn-lg" *ngIf="data.dialogType == user_creation">Save</button>
   <button mat-dialog-close type="button" class="btn btn-secondary btn-lg" style="margin-left: 20px;">Cancel</button>
 </mat-dialog-actions>

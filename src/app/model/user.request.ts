@@ -6,4 +6,5 @@ export interface UserRequest {
   notLocked: boolean;
   role: string;
   supId: string;
+  themeId: number;
 }

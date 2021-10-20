@@ -11,6 +11,7 @@ export interface UserResponse {
   authorities:[]
   supId: string;
   active: boolean;
-  notLocked: boolean
-  simpleUserResponses: SimpleUserResponse[]
+  notLocked: boolean;
+  simpleUserResponses: SimpleUserResponse[];
+  themeId: number;
 }

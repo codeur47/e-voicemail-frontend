@@ -13,6 +13,8 @@ import {Subscription} from "rxjs";
 import {Role} from "../enum/role.enum";
 import {UserResponse} from "../model/user.response";
 import {SimpleUserResponse} from "../model/simpleuser.response";
+import { CustomHttpResponse } from '../model/custom-http-response';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -36,7 +38,8 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     active: false,
     notLocked: false,
     role: '',
-    supId: ''
+    supId: '',
+    themeId: 0
   };
 
   dialogType = "";
@@ -60,7 +63,6 @@ export class DashBoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.theme = this.generateCircleThemes();
     this.user = this.authenticationService.getUserFromLocalCache();
     this.getUsers();
     this.initUserForm();
@@ -70,6 +72,12 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     this.dialogType = dialogType;
     if (selectedUser != undefined)
       this.selectedUser = selectedUser;
+    if (this.dialogType == this.user_update) {
+      this.initUserForm(this.selectedUser);
+    }
+    if (this.dialogType == this.user_creation) {
+      this.initUserForm();
+    }
     const dialogRef = this.dialog.open(DialogComponent, {
       data: {
         userForm: this.userForm,
@@ -82,10 +90,25 @@ export class DashBoardComponent implements OnInit, OnDestroy {
       minWidth: this.minWidth
     });
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
+      if (result && this.dialogType == this.user_creation) {
         this.addUser();
       }
+      if (result && this.dialogType == this.user_deletion) {
+        this.deleteUser();
+      }
+
     })
+  }
+
+
+  public deleteUser(): void {
+    this.subscriptions.push(
+      this.userService.deleteUser(this.selectedUser.username).subscribe(
+        (response: CustomHttpResponse) => {
+          this.getUsers();
+        }
+      )
+    );
   }
 
 
@@ -97,6 +120,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     this.userRequest.notLocked = this.userForm.get('notLocked')?.value;
     this.userRequest.role = this.userForm.get('role')?.value;
     this.userRequest.supId = this.userForm.get('supId')?.value;
+    this.userRequest.themeId = this.generateCircleThemesIndex();
 
     this.subscriptions.push(
       this.userService.addUser(this.userRequest).subscribe(
@@ -122,21 +146,37 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     );
   }
 
-  initUserForm(): void {
-    this.userForm = new FormGroup({
-      firstName: new FormControl('', Validators.required),
-      lastName: new FormControl('', Validators.required),
-      username: new FormControl('', Validators.required),
-      active: new FormControl(false, Validators.required),
-      notLocked: new FormControl(false, Validators.required),
-      role: new FormControl('', Validators.required),
-      supId: new FormControl('')
-    });
+  initUserForm(selectedUser?: UserResponse): void {
+    if (selectedUser == undefined){
+      this.userForm = new FormGroup({
+        firstName: new FormControl('', Validators.required),
+        lastName: new FormControl('', Validators.required),
+        username: new FormControl('', Validators.required),
+        active: new FormControl(false, Validators.required),
+        notLocked: new FormControl(false, Validators.required),
+        role: new FormControl('', Validators.required),
+        supId: new FormControl('')
+      });
+    }else {
+      this.userForm = new FormGroup({
+        firstName: new FormControl(selectedUser.firstName, Validators.required),
+        lastName: new FormControl(selectedUser.lastName, Validators.required),
+        username: new FormControl(selectedUser.username, Validators.required),
+        active: new FormControl(selectedUser.active, Validators.required),
+        notLocked: new FormControl(selectedUser.notLocked, Validators.required),
+        role: new FormControl(selectedUser.role, Validators.required),
+        supId: new FormControl(selectedUser.supId)
+      });
+    }
+
   }
 
-  generateCircleThemes(): string{
-    const randomIndex = Math.floor(Math.random() * 5);
+  generateCircleThemes(randomIndex: number): string{
     return this.circleTheme[randomIndex];
+  }
+
+  generateCircleThemesIndex(): number {
+    return Math.floor(Math.random() * 5);
   }
 
 }

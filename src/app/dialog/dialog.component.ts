@@ -15,9 +15,16 @@ export class DialogComponent {
 
   showSup = false;
 
+  circleTheme= ['dark','danger','info', 'primary','success', 'warning'];
+
+
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 
   roleSelect(value: any){
     this.showSup = value.value == Role.USER;
+  }
+
+  generateCircleThemes(randomIndex: number): string{
+    return this.circleTheme[randomIndex];
   }
 }
