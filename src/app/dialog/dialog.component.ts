@@ -12,6 +12,7 @@ export class DialogComponent {
   user_creation = DialogType.USER_CREATION;
   user_information = DialogType.USER_INFORMATION;
   user_update = DialogType.USER_UPDATE;
+  user_alert = DialogType.USER_ALERT;
 
   showSup = false;
 

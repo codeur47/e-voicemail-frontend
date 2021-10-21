@@ -7,4 +7,5 @@ export interface UserRequest {
   role: string;
   supId: string;
   themeId: number;
+  oldUsername: string;
 }

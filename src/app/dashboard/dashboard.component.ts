@@ -12,7 +12,6 @@ import {UserRequest} from "../model/user.request";
 import {Subscription} from "rxjs";
 import {Role} from "../enum/role.enum";
 import {UserResponse} from "../model/user.response";
-import {SimpleUserResponse} from "../model/simpleuser.response";
 import { CustomHttpResponse } from '../model/custom-http-response';
 
 
@@ -29,6 +28,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
   user_creation = DialogType.USER_CREATION;
   user_information = DialogType.USER_INFORMATION;
   user_update = DialogType.USER_UPDATE;
+  user_alert = DialogType.USER_ALERT;
 
   userForm: FormGroup;
   userRequest: UserRequest = {
@@ -39,13 +39,15 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     notLocked: false,
     role: '',
     supId: '',
-    themeId: 0
+    themeId: 0,
+    oldUsername: ''
   };
 
   dialogType = "";
   private subscriptions: Subscription[] = [];
   public users: User[];
   public supervisors: UserResponse[];
+  public simpleUsers: UserResponse[];
   public refreshing: boolean;
   public selectedUser: UserResponse;
   userResponses: UserResponse[];
@@ -60,6 +62,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   ngOnInit(): void {
@@ -70,8 +73,15 @@ export class DashBoardComponent implements OnInit, OnDestroy {
 
   openDialog(dialogType: string, selectedUser?: UserResponse) {
     this.dialogType = dialogType;
-    if (selectedUser != undefined)
+    if (selectedUser != undefined){
       this.selectedUser = selectedUser;
+      if (this.selectedUser.simpleUserResponses != undefined){
+        if (this.selectedUser.role == Role.SUPERVISOR)
+        if (this.selectedUser.simpleUserResponses.length > 0){
+          this.dialogType = this.user_alert;
+        }
+      }
+    }
     if (this.dialogType == this.user_update) {
       this.initUserForm(this.selectedUser);
     }
@@ -93,10 +103,12 @@ export class DashBoardComponent implements OnInit, OnDestroy {
       if (result && this.dialogType == this.user_creation) {
         this.addUser();
       }
+      if (result && this.dialogType == this.user_update) {
+        this.addUser();
+      }
       if (result && this.dialogType == this.user_deletion) {
         this.deleteUser();
       }
-
     })
   }
 
@@ -120,16 +132,31 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     this.userRequest.notLocked = this.userForm.get('notLocked')?.value;
     this.userRequest.role = this.userForm.get('role')?.value;
     this.userRequest.supId = this.userForm.get('supId')?.value;
-    this.userRequest.themeId = this.generateCircleThemesIndex();
+    if(this.user_creation == this.dialogType)
+      this.userRequest.themeId = this.generateCircleThemesIndex();
+    if(this.user_update == this.dialogType)
+      this.userRequest.oldUsername = this.selectedUser.username;
 
-    this.subscriptions.push(
-      this.userService.addUser(this.userRequest).subscribe(
-        (response: User) => {
-          this.getUsers();
-          this.userForm.reset();
-        }
+    if(this.user_creation == this.dialogType){
+      this.subscriptions.push(
+        this.userService.addUser(this.userRequest).subscribe(
+          (response: UserResponse) => {
+            this.getUsers();
+            this.userForm.reset();
+          }
+        )
       )
-    )
+    }
+    if(this.user_update == this.dialogType) {
+      this.subscriptions.push(
+        this.userService.updateUser(this.userRequest).subscribe(
+          (response: UserResponse) => {
+            this.getUsers();
+            this.userForm.reset();
+          }
+        )
+      )
+    }
   }
 
   getUsers(){
@@ -140,6 +167,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
           this.userService.addUsersToLocalCache(response);
           this.userResponses = response;
           this.supervisors = this.userResponses.filter(user => user.role === Role.SUPERVISOR);
+          this.simpleUsers = this.userResponses.filter(user => user.role === Role.USER);
           this.refreshing = false;
         }
       )

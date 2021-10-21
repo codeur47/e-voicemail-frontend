@@ -17,12 +17,12 @@ export class UserService {
     return this.http.get<UserResponse[]>(`${this.host}/user/list`);
   }
 
-  public addUser(userRequest: UserRequest): Observable<User> {
-    return this.http.post<User>(`${this.host}/user/add`, userRequest);
+  public addUser(userRequest: UserRequest): Observable<UserResponse> {
+    return this.http.post<UserResponse>(`${this.host}/user/add`, userRequest);
   }
 
-  public updateUser(formData: FormData): Observable<User> {
-    return this.http.post<User>(`${this.host}/user/update`, formData);
+  public updateUser(userRequest: UserRequest): Observable<UserResponse> {
+    return this.http.post<UserResponse>(`${this.host}/user/update`, userRequest);
   }
 
   public resetPassword(email: string): Observable<CustomHttpResponse> {
