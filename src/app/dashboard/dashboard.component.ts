@@ -13,6 +13,9 @@ import {Subscription} from "rxjs";
 import {Role} from "../enum/role.enum";
 import {UserResponse} from "../model/user.response";
 import { CustomHttpResponse } from '../model/custom-http-response';
+import {CustomerRequest} from "../model/customer.request";
+import {CustomerResponse} from "../model/customer.response";
+import {CustomerService} from "../service/customer.service";
 
 
 @Component({
@@ -30,6 +33,12 @@ export class DashBoardComponent implements OnInit, OnDestroy {
   user_update = DialogType.USER_UPDATE;
   user_alert = DialogType.USER_ALERT;
 
+  customer_deletion = DialogType.CUSTOMER_DELETION;
+  customer_creation = DialogType.CUSTOMER_CREATION;
+  customer_information = DialogType.CUSTOMER_INFORMATION;
+  customer_update = DialogType.CUSTOMER_UPDATE;
+  customer_alert = DialogType.CUSTOMER_ALERT;
+
   userForm: FormGroup;
   userRequest: UserRequest = {
     firstName: '',
@@ -43,6 +52,15 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     oldUsername: ''
   };
 
+  customerForm: FormGroup;
+  customerRequest: CustomerRequest = {
+    firstName: '',
+    lastName: '',
+    phoneNumber: ''
+  };
+
+
+
   dialogType = "";
   private subscriptions: Subscription[] = [];
   public users: User[];
@@ -51,14 +69,16 @@ export class DashBoardComponent implements OnInit, OnDestroy {
   public refreshing: boolean;
   public selectedUser: UserResponse;
   userResponses: UserResponse[];
+  customersResponses: CustomerResponse[];
   circleTheme= ['dark','danger','info', 'primary','success', 'warning'];
   theme: string;
 
 
   constructor(private router: Router, private authenticationService: AuthenticationService,
               private userService: UserService, private notificationService: NotificationService,
-              public dialog: MatDialog,fb: FormBuilder) {
+              private customerService: CustomerService, public dialog: MatDialog,fb: FormBuilder) {
     this.userForm = fb.group(this.userRequest);
+    this.customerForm = fb.group(this.customerRequest);
   }
 
   ngOnDestroy(): void {
@@ -68,17 +88,20 @@ export class DashBoardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.user = this.authenticationService.getUserFromLocalCache();
     this.getUsers();
+    this.getCustomers()
     this.initUserForm();
   }
 
-  openDialog(dialogType: string, selectedUser?: UserResponse) {
+  openDialog(dialogType: string, selectedUser?: UserResponse, selectedCustomer?: CustomerResponse) {
     this.dialogType = dialogType;
     if (selectedUser != undefined){
       this.selectedUser = selectedUser;
-      if (this.selectedUser.simpleUserResponses != undefined){
-        if (this.selectedUser.role == Role.SUPERVISOR)
-        if (this.selectedUser.simpleUserResponses.length > 0){
-          this.dialogType = this.user_alert;
+      if (this.dialogType == this.user_deletion){
+        if (this.selectedUser.simpleUserResponses != undefined){
+          if (this.selectedUser.role == Role.SUPERVISOR)
+            if (this.selectedUser.simpleUserResponses.length > 0){
+              this.dialogType = this.user_alert;
+            }
         }
       }
     }
@@ -95,7 +118,8 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         selectedUser: this.selectedUser,
         users: this.users,
         supervisors: this.supervisors,
-        simpleUserResponses: selectedUser?.simpleUserResponses
+        simpleUserResponses: selectedUser?.simpleUserResponses,
+        customerForm: this.customerForm
       },
       minWidth: this.minWidth
     });
@@ -108,6 +132,9 @@ export class DashBoardComponent implements OnInit, OnDestroy {
       }
       if (result && this.dialogType == this.user_deletion) {
         this.deleteUser();
+      }
+      if (result && this.dialogType == this.customer_creation) {
+        this.addCustomer();
       }
     })
   }
@@ -123,6 +150,23 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     );
   }
 
+
+  addCustomer() {
+    this.customerRequest.firstName = this.customerForm.get('firstName')?.value;
+    this.customerRequest.lastName = this.customerForm.get('lastName')?.value;
+    this.customerRequest.phoneNumber = this.customerForm.get('phoneNumber')?.value;
+
+    if(this.customer_creation == this.dialogType){
+      this.subscriptions.push(
+        this.customerService.addCustomer(this.customerRequest).subscribe(
+          (response: CustomerResponse) => {
+            this.getCustomers();
+            this.customerForm.reset();
+          }
+        )
+      )
+    }
+  }
 
   addUser() {
     this.userRequest.firstName = this.userForm.get('firstName')?.value;
@@ -157,6 +201,19 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         )
       )
     }
+  }
+
+  getCustomers(){
+    this.refreshing = true;
+    this.subscriptions.push(
+      this.customerService.getCustomers().subscribe(
+        (response: CustomerResponse[]) => {
+          this.customerService.addCustomersToLocalCache(response);
+          this.customersResponses = response;
+          this.refreshing = false;
+        }
+      )
+    );
   }
 
   getUsers(){
@@ -197,6 +254,14 @@ export class DashBoardComponent implements OnInit, OnDestroy {
       });
     }
 
+  }
+
+  initCustomerForm(): void {
+    this.customerForm = new FormGroup({
+      firstName: new FormControl('', Validators.required),
+      lastName: new FormControl('', Validators.required),
+      phoneNumber: new FormControl('', Validators.required)
+    })
   }
 
   generateCircleThemes(randomIndex: number): string{

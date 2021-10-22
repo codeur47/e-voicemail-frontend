@@ -14,6 +14,12 @@ export class DialogComponent {
   user_update = DialogType.USER_UPDATE;
   user_alert = DialogType.USER_ALERT;
 
+  customer_deletion = DialogType.CUSTOMER_DELETION;
+  customer_creation = DialogType.CUSTOMER_CREATION;
+  customer_information = DialogType.CUSTOMER_INFORMATION;
+  customer_update = DialogType.CUSTOMER_UPDATE;
+  customer_alert = DialogType.CUSTOMER_ALERT;
+
   showSup = false;
 
   circleTheme= ['dark','danger','info', 'primary','success', 'warning'];

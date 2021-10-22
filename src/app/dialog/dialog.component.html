@@ -9,6 +9,16 @@
 
   <p class="card-label" *ngIf="user_alert == data.dialogType">Warning</p>
 
+  <p class="card-label" *ngIf="customer_creation == data.dialogType">Add customer</p>
+
+  <p class="card-label" *ngIf="customer_deletion == data.dialogType">Delete customer</p>
+
+  <p class="card-label" *ngIf="customer_update == data.dialogType">Update customer</p>
+
+  <p class="card-label" *ngIf="customer_information == data.dialogType">Customer details</p>
+
+  <p class="card-label" *ngIf="customer_alert == data.dialogType">Warning</p>
+
   <span class="svg-icon svg-icon-primary svg-icon-2x" mat-dialog-close>
     <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
       <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -224,11 +234,29 @@
 
   <p class="card-label" *ngIf="user_deletion == data.dialogType">Are you sure to delete this user ?</p>
 
+  <form class="form" [formGroup]="data.customerForm" *ngIf="customer_creation == data.dialogType || customer_update == data.dialogType">
+    <div class="fv-row mb-10">
+      <label class="required form-label fs-6 mb-2">FirstName</label>
+      <input class="form-control form-control-lg form-control-solid" type="text" [formControlName]="'firstName'"
+             name="firstName" placeholder="FirstName" autocomplete="off" required/>
+    </div>
+    <div class="fv-row mb-10">
+      <label class="required form-label fs-6 mb-2">LastName</label>
+      <input class="form-control form-control-lg form-control-solid" type="text" [formControlName]="'lastName'"
+             name="lastName" placeholder="LastName" autocomplete="off" required/>
+    </div>
+    <div class="fv-row mb-10">
+      <label class="required form-label fs-6 mb-2">phoneNumber</label>
+      <input class="form-control form-control-lg form-control-solid" type="text" [formControlName]="'phoneNumber'"
+             name="phoneNumber" placeholder="phoneNumber" autocomplete="off" required/>
+    </div>
+  </form>
+
 </mat-dialog-content>
 
-<mat-dialog-actions style="display:flex; justify-content:center" *ngIf="data.dialogType != user_information">
+<mat-dialog-actions style="display:flex; justify-content:center" *ngIf="data.dialogType != user_information || data.dialogType != customer_information">
   <button [mat-dialog-close]="true" type="button" class="btn btn-danger btn-lg" *ngIf="data.dialogType == user_deletion">Delete</button>
   <button [mat-dialog-close]="true" type="button" class="btn btn-primary btn-lg" *ngIf="data.dialogType == user_update">Update</button>
-  <button [mat-dialog-close]="true" type="button" class="btn btn-primary btn-lg" *ngIf="data.dialogType == user_creation">Save</button>
+  <button [mat-dialog-close]="true" type="button" class="btn btn-primary btn-lg" *ngIf="data.dialogType == user_creation || data.dialogType == customer_creation">Save</button>
   <button mat-dialog-close type="button" class="btn btn-secondary btn-lg" style="margin-left: 20px;">Cancel</button>
 </mat-dialog-actions>
