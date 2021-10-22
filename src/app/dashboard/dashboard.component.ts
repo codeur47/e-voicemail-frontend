@@ -68,6 +68,7 @@ export class DashBoardComponent implements OnInit, OnDestroy {
   public simpleUsers: UserResponse[];
   public refreshing: boolean;
   public selectedUser: UserResponse;
+  public selectedCustomer: CustomerResponse;
   userResponses: UserResponse[];
   customersResponses: CustomerResponse[];
   circleTheme= ['dark','danger','info', 'primary','success', 'warning'];
@@ -89,7 +90,6 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     this.user = this.authenticationService.getUserFromLocalCache();
     this.getUsers();
     this.getCustomers()
-    this.initUserForm();
   }
 
   openDialog(dialogType: string, selectedUser?: UserResponse, selectedCustomer?: CustomerResponse) {
@@ -105,12 +105,23 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         }
       }
     }
+    if (selectedCustomer != undefined){
+      this.selectedCustomer = selectedCustomer;
+    }
     if (this.dialogType == this.user_update) {
       this.initUserForm(this.selectedUser);
     }
     if (this.dialogType == this.user_creation) {
       this.initUserForm();
     }
+    if (this.dialogType == this.customer_creation){
+      this.initCustomerForm();
+    }
+
+    if (this.dialogType == this.customer_update){
+      this.initCustomerForm(this.selectedCustomer);
+    }
+
     const dialogRef = this.dialog.open(DialogComponent, {
       data: {
         userForm: this.userForm,
@@ -119,7 +130,8 @@ export class DashBoardComponent implements OnInit, OnDestroy {
         users: this.users,
         supervisors: this.supervisors,
         simpleUserResponses: selectedUser?.simpleUserResponses,
-        customerForm: this.customerForm
+        customerForm: this.customerForm,
+        selectedCustomer: this.selectedCustomer
       },
       minWidth: this.minWidth
     });
@@ -136,6 +148,12 @@ export class DashBoardComponent implements OnInit, OnDestroy {
       if (result && this.dialogType == this.customer_creation) {
         this.addCustomer();
       }
+      if (result && this.dialogType == this.customer_update) {
+        this.addCustomer();
+      }
+      if (result && this.dialogType == this.customer_deletion) {
+        this.deleteCustomer()
+      }
     })
   }
 
@@ -150,15 +168,37 @@ export class DashBoardComponent implements OnInit, OnDestroy {
     );
   }
 
+  public deleteCustomer(): void {
+    this.subscriptions.push(
+      this.customerService.deleteCustomer(this.selectedCustomer.id).subscribe(
+        (response: CustomHttpResponse) => {
+          this.getCustomers();
+        }
+      )
+    );
+  }
+
 
   addCustomer() {
     this.customerRequest.firstName = this.customerForm.get('firstName')?.value;
     this.customerRequest.lastName = this.customerForm.get('lastName')?.value;
     this.customerRequest.phoneNumber = this.customerForm.get('phoneNumber')?.value;
+    if (this.customer_update == this.dialogType)
+      this.customerRequest.id = this.selectedCustomer.id;
 
     if(this.customer_creation == this.dialogType){
       this.subscriptions.push(
         this.customerService.addCustomer(this.customerRequest).subscribe(
+          (response: CustomerResponse) => {
+            this.getCustomers();
+            this.customerForm.reset();
+          }
+        )
+      )
+    }
+    if(this.customer_update == this.dialogType){
+      this.subscriptions.push(
+        this.customerService.updateCustomer(this.customerRequest).subscribe(
           (response: CustomerResponse) => {
             this.getCustomers();
             this.customerForm.reset();
@@ -256,12 +296,20 @@ export class DashBoardComponent implements OnInit, OnDestroy {
 
   }
 
-  initCustomerForm(): void {
-    this.customerForm = new FormGroup({
-      firstName: new FormControl('', Validators.required),
-      lastName: new FormControl('', Validators.required),
-      phoneNumber: new FormControl('', Validators.required)
-    })
+  initCustomerForm(selectCustomer?: CustomerResponse): void {
+    if (selectCustomer == null) {
+      this.customerForm = new FormGroup({
+        firstName: new FormControl('', Validators.required),
+        lastName: new FormControl('', Validators.required),
+        phoneNumber: new FormControl('', Validators.required)
+      });
+    }else {
+      this.customerForm = new FormGroup({
+        firstName: new FormControl(selectCustomer.firstName, Validators.required),
+        lastName: new FormControl(selectCustomer.lastName, Validators.required),
+        phoneNumber: new FormControl(selectCustomer.phoneNumber, Validators.required)
+      });
+    }
   }
 
   generateCircleThemes(randomIndex: number): string{
